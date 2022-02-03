@@ -10,20 +10,18 @@ import java.util.stream.Collectors;
 public class FileHandler {
     public static  Set<Game> list = new HashSet<>();
 
-
-    public static Game readFile() {
+    public static void readFile() {
         final String GAME_PATH = "src/main/resources/soccerlist.csv";
         String line;
 
-        Game games = null;
         try {
             BufferedReader reader = new BufferedReader(new FileReader(GAME_PATH));
-            line = reader.readLine(); //para não ler a primeira linha(cabeçalho)
+            line = reader.readLine();
 
             while ((line = reader.readLine()) != null) {
                 String[] teamLine = line.split(";");
 
-                games = new Game(
+                Game games = new Game(
                         teamLine[0],
                         teamLine[1],
                         (Integer.parseInt(teamLine[2])),
@@ -35,7 +33,6 @@ public class FileHandler {
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
-        return games;
     }
 
     public static void separateByTeams() {
