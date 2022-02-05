@@ -22,8 +22,8 @@ public class Game {
 
         @Override
         public String toString() {
-                return  homeTeamName + " X " + visitorTeamName + " ; " + homeTeamGoals + " X "
-                        + visitorTeamGoals + " - " + dateAndTime;
+                return "\n" + homeTeamName + " X " + visitorTeamName + " ; " + homeTeamGoals + " X "
+                        + visitorTeamGoals + " - " + dateAndTime ;
 
         }
 }

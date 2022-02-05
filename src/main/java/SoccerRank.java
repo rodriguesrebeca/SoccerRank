@@ -6,7 +6,6 @@ public class SoccerRank {
         FileHandler.readFile();
         FileHandler.sortedList();
         FileHandler.separateByTeams();
-
-        //FileHandler.sortedList.forEach(System.out::println);
+        FileHandler.generateRanking();
     }
 }
