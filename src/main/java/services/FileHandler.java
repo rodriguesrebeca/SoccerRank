@@ -1,5 +1,6 @@
 package services;
 
+import com.google.common.base.Splitter;
 import utils.Game;
 import utils.Team;
 
@@ -28,14 +29,14 @@ public class FileHandler {
             DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
             while ((line = reader.readLine()) != null) {
-                String[] teamLine = line.split(";");
+                List<String> teamLine = Splitter.on(";").splitToList(line);
 
                 Game games = new Game(
-                        teamLine[0],
-                        teamLine[1],
-                        (Integer.parseInt(teamLine[2])),
-                        (Integer.parseInt(teamLine[3])),
-                        LocalDate.parse(teamLine[4],dateTimeFormatter));
+                        teamLine.get(0),
+                        teamLine.get(1),
+                        (Integer.parseInt(teamLine.get(2))),
+                        (Integer.parseInt(teamLine.get(3))),
+                        LocalDate.parse(teamLine.get(4),dateTimeFormatter));
                 list.add(games);
             }
         } catch (IOException e) {
@@ -82,8 +83,6 @@ public class FileHandler {
                 .forEach(team -> {
                     try (FileOutputStream fileOutputStream = new FileOutputStream( "src/main/resources/_ranking.csv", true)) {
                         fileOutputStream.write(team.toString().getBytes(StandardCharsets.UTF_8));
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
