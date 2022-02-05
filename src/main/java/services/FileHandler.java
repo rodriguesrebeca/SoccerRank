@@ -1,19 +1,21 @@
 package services;
 
 import utils.Game;
+import utils.Team;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class FileHandler {
     public static  Set<Game> list = new HashSet<>();
     public static  ArrayList<Game> sortedList = new ArrayList<>();
+    public static Set<Team> ranking = new HashSet<>();
+    public static  ArrayList<Team> sortedRanking = new ArrayList<>();
 
     public static void readFile() {
         final String GAME_PATH = "src/main/resources/soccerlist.csv";
@@ -49,22 +51,43 @@ public class FileHandler {
     }
 
     public static void separateByTeams() {
-        sortedList.stream() //deve ser gerado a partir da lista ordenada
-                .collect(Collectors.groupingBy(Game::getHomeTeamName))
-                .forEach((team,game) -> {
-                    try (PrintWriter printWriter = new PrintWriter(
-                            new FileOutputStream("src/main/resources/"+team+".csv"))){
-                        printWriter.println(
-                                "Time: " + team
-                        );
-                        printWriter.println(
-                                "Jogos: " + game
-                        );
+        Map<String, List<Game>> collect = sortedList.stream()
+                .collect(Collectors.groupingBy(Game::getHomeTeamName));
+
+        collect.forEach((teamName,games) -> {
+            try (PrintWriter printWriter = new PrintWriter(
+                    new FileOutputStream("src/main/resources/"+teamName+".csv"))){
+                printWriter.println(
+                        "Time: " + teamName
+                );
+                printWriter.println(
+                        "Jogos: " + games.toString()
+                );
+
+                Team team = new Team();
+                team.convert(teamName,games);
+                ranking.add(team);
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public static void generateRanking(){
+        sortedRanking.addAll(ranking);
+        sortedRanking.stream()
+                .sorted(Comparator.comparing(Team::getScore, Comparator.reverseOrder())
+                        .thenComparing(Team::getNumOfVictories,Comparator.reverseOrder()))
+                .forEach(team -> {
+                    try (FileOutputStream fileOutputStream = new FileOutputStream( "src/main/resources/_ranking.csv", true)) {
+                        fileOutputStream.write(team.toString().getBytes(StandardCharsets.UTF_8));
                     } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
                         e.printStackTrace();
                     }
                 });
     }
-
 }
 
