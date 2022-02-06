@@ -3,12 +3,9 @@ package services;
 import com.google.common.base.Splitter;
 import utils.Game;
 import utils.Team;
-
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -19,14 +16,12 @@ public class FileHandler {
     public static  ArrayList<Team> sortedRanking = new ArrayList<>();
 
     public static void readFile() {
-        final String GAME_PATH = "src/main/resources/soccerlist.csv";
+        final String GAME_PATH = "src/main/resources/matchesResult.csv";
         String line;
 
         try {
             BufferedReader reader = new BufferedReader(new FileReader(GAME_PATH));
             reader.readLine();
-
-            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
             while ((line = reader.readLine()) != null) {
                 List<String> teamLine = Splitter.on(";").splitToList(line);
@@ -36,7 +31,7 @@ public class FileHandler {
                         teamLine.get(1),
                         (Integer.parseInt(teamLine.get(2))),
                         (Integer.parseInt(teamLine.get(3))),
-                        LocalDate.parse(teamLine.get(4),dateTimeFormatter));
+                        (LocalDate.parse(teamLine.get(4))));
                 list.add(games);
             }
         } catch (IOException e) {
@@ -59,10 +54,7 @@ public class FileHandler {
             try (PrintWriter printWriter = new PrintWriter(
                     new FileOutputStream("src/main/resources/"+teamName+".csv"))){
                 printWriter.println(
-                        "Time: " + teamName
-                );
-                printWriter.println(
-                        "Jogos: " + games.toString()
+                        "Time: " + teamName + games.toString()
                 );
 
                 Team team = new Team();

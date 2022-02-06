@@ -5,7 +5,10 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 @Getter
 @AllArgsConstructor
@@ -19,11 +22,11 @@ public class Game {
         private int visitorTeamGoals;
         private LocalDate dateAndTime;
 
-
         @Override
         public String toString() {
-                return "\n" + homeTeamName + " X " + visitorTeamName + " ; " + homeTeamGoals + " X "
-                        + visitorTeamGoals + " - " + dateAndTime ;
+                DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                return "\n" + dateTimeFormatter.format(dateAndTime) + ": " + homeTeamName + " " + homeTeamGoals +
+                        " X " + visitorTeamGoals + " " + visitorTeamName;
 
         }
 }
