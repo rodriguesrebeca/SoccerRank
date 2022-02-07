@@ -10,29 +10,29 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class FileHandler {
-    public static  Set<Game> list = new HashSet<>();
-    public static  ArrayList<Game> sortedList = new ArrayList<>();
-    public static Set<Team> ranking = new HashSet<>();
-    public static  ArrayList<Team> sortedRanking = new ArrayList<>();
+    private static final Set<Game> gamesList = new HashSet<>();
+    private static final ArrayList<Game> sortedGamesList = new ArrayList<>();
+    private static Map<String, List<Game>> gamesMap;
+    private static final Set<Team> ranking = new HashSet<>();
+    private static final ArrayList<Team> sortedRanking = new ArrayList<>();
 
-    public static void readFile() {
-        final String GAME_PATH = "src/main/resources/matchesResult.csv";
+    public static void readFile(String path) {
         String line;
 
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(GAME_PATH));
+            BufferedReader reader = new BufferedReader(new FileReader(path));
             reader.readLine();
 
             while ((line = reader.readLine()) != null) {
                 List<String> teamLine = Splitter.on(";").splitToList(line);
 
-                Game games = new Game(
+                Game game = new Game(
                         teamLine.get(0),
                         teamLine.get(1),
                         (Integer.parseInt(teamLine.get(2))),
                         (Integer.parseInt(teamLine.get(3))),
                         (LocalDate.parse(teamLine.get(4))));
-                list.add(games);
+                FileHandler.gamesList.add(game);
             }
         } catch (IOException e) {
             System.out.println(e.getMessage());
@@ -40,27 +40,33 @@ public class FileHandler {
     }
 
     public static void sortedList(){
-        sortedList.addAll(list);
-        sortedList.sort(Comparator.comparing(Game::getDateAndTime)
+        sortedGamesList.addAll(gamesList);
+        sortedGamesList.sort(Comparator.comparing(Game::getDateAndTime)
                 .thenComparing(Game::getHomeTeamName).
                 thenComparing(Game::getVisitorTeamName));
     }
 
-    public static void separateByTeams() {
-        Map<String, List<Game>> collect = sortedList.stream()
+    public static void separateByTeams(){
+        gamesMap = sortedGamesList.stream()
                 .collect(Collectors.groupingBy(Game::getHomeTeamName));
 
-        collect.forEach((teamName,games) -> {
+        Map<String, List<Game>> gamesVisitorTeamMap = sortedGamesList.stream()
+                .collect(Collectors.groupingBy(Game::getVisitorTeamName));
+
+        gamesMap.forEach((teamName,games)->{
+            Team team = new Team();
+            team.convert(teamName, games, gamesVisitorTeamMap.get(teamName));
+            ranking.add(team);});
+    }
+
+
+    public static void generateTeamsFile() {
+        gamesMap.forEach((teamName, games) -> {
             try (PrintWriter printWriter = new PrintWriter(
                     new FileOutputStream("src/main/resources/"+teamName+".csv"))){
                 printWriter.println(
                         "Time: " + teamName + games.toString()
                 );
-
-                Team team = new Team();
-                team.convert(teamName,games);
-                ranking.add(team);
-
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }

@@ -16,19 +16,21 @@ public class Team {
     private int numOfVictories;
     private int numOfDefeats;
     private int numOfDraws;
-    private List<Game> gameTeamList;
+    private List<Game> gamesAsHomeTeam;
+    private List<Game> gamesAsVisitorTeam;
 
     @Override
     public String toString() {
         return name + ";" + numOfVictories + ";" + numOfDraws + ";" + numOfDefeats + ";" + score + ";" + "\n";
     }
 
-    public void convert(String teamName, List<Game> games){
+    public void convert(String teamName, List<Game> gamesAsHomeTeam, List<Game> gamesAsVisitorTeam){
 
-        name = teamName;
-        gameTeamList = games;
+        this.name = teamName;
+        this.gamesAsHomeTeam = gamesAsHomeTeam;
+        this.gamesAsVisitorTeam = gamesAsVisitorTeam;
 
-        games.forEach(game -> {
+        gamesAsHomeTeam.forEach(game -> {
                     if (game.getHomeTeamGoals() > game.getVisitorTeamGoals()){
                         numOfVictories ++;
                     }else if (game.getHomeTeamGoals() == game.getVisitorTeamGoals()){
@@ -37,6 +39,16 @@ public class Team {
                         numOfDefeats++;
                     }
                 });
+
+        gamesAsVisitorTeam.forEach(game -> {
+            if (game.getVisitorTeamGoals() > game.getHomeTeamGoals()){
+                numOfVictories ++;
+            }else if (game.getVisitorTeamGoals() == game.getHomeTeamGoals()){
+                numOfDraws++;
+            }else if (game.getVisitorTeamGoals() < game.getHomeTeamGoals()) {
+                numOfDefeats++;
+            }
+        });
 
         calculateScore();
     }
